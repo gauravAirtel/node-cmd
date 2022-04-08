@@ -31,44 +31,35 @@ app.post('/close', async (req, res) => {
 async function startProcess(cmd) {
   return new Promise((resolve, reject) => {
     const args = cmd.substr(7).split(' ');
-
     logger.info(`FFMPEG Arguments: ${args}`)
     _process = spawn('ffmpeg', args);
-
-    logger.info('--------------------------------------------')
-    logger.info(`NEW CHILD PROCESS SPAWNED:: ${_process.pid}`)
 
     if (_process.stderr) {
       _process.stderr.setEncoding('utf-8');
 
-      _process.stderr.on('data', data => {
-        logger.info(`ffmpeg::process::pid:: ${_process.pid}`);
-        logger.info(`ffmpeg::process::stderr ${data}`);
-      });
+      _process.stderr.on('data', data =>
+        logger.info(`ffmpeg::process::stderr ${data}`)
+      );
     }
 
     if (_process.stdout) {
       _process.stdout.setEncoding('utf-8');
 
-      _process.stdout.on('data', data => {
-        logger.info(`ffmpeg::process::pid:: ${_process.pid}`);
+      _process.stdout.on('data', data =>
         logger.info(`ffmpeg::process::stderr ${data}`)
-      });
+      );
     }
 
-    _process.on('message', message => {
-      logger.info(`ffmpeg::process::pid:: ${_process.pid}`);
+    _process.on('message', message =>
       logger.info(`ffmpeg::process::message ${message}`)
-    });
+    );
 
     _process.on('error', error => {
-      logger.info(`ffmpeg::process::pid:: ${_process.pid}`);
       logger.error(`Child Process::error ${error}`);
       reject('Child Process::error:: ' + error.message);
     });
 
     _process.once('close', (code) => {
-      logger.info(`ffmpeg::process::pid:: ${_process.pid}`);
       logger.info(`ffmpeg::process::close ${code}`);
       if (code) {
         logger.info('FFMPEG Exited with code 1');

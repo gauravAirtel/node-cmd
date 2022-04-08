@@ -34,6 +34,9 @@ async function startProcess(cmd) {
     logger.info(`FFMPEG Arguments: ${args}`)
     _process = spawn('ffmpeg', args);
 
+    logger.info('-------------------------------------------')
+    logger.info(`NEW CHILD PROCESS SPAWNED: ${_process.pid}`);
+
     if (_process.stderr) {
       _process.stderr.setEncoding('utf-8');
 
@@ -60,6 +63,7 @@ async function startProcess(cmd) {
     });
 
     _process.once('close', (code) => {
+      logger.info(`ffmpeg::pid: ${_process.pid}`);
       logger.info(`ffmpeg::process::close ${code}`);
       if (code) {
         logger.info('FFMPEG Exited with code 1');
